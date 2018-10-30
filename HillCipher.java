@@ -10,7 +10,8 @@ public class HillCipher {
     static int[][] E_1; //matriz de Desencriptacion
     static int[][] inverse;
     static int[][] temp;
-
+    static Operaciones oper = new Operaciones();
+ 
     public static void main(String[] args)
     {
         Scanner sc = new Scanner(System.in);
@@ -59,7 +60,31 @@ public class HillCipher {
                 }
                 System.out.println("El texto encriptado es: \n\t->"+desencriptarConInversa(E_1, textoADesenc, tamanio));
                 break;
-                
+            case 3:
+                break;
+            case 4:
+                System.out.println("Ingrese el texto que va a desencriptar: ");
+                textoAEnc = (sc.nextLine()).toUpperCase();
+                System.out.println("Ingrese el tamaño de la matriz de encriptacion: \n\t1. 2 filas x 2 columnas. \n\t2. 3 filas x 3 columnas.");
+                tamano = sc.nextInt();
+                tamano +=1;
+                E = new int[tamano][tamano];
+                //ingreso de matriz de encriptacion
+                for(int i=0; i<tamano;i++){
+                    for(int j=0; j<tamano; j++){
+                        System.out.println("Introduzca el elemento [" + i + "," + j + "]");
+                        int entrada = sc.nextInt();
+                        if (entrada > 29 || entrada <0)
+                            System.out.println("Ingrese un numero valido (modulo 29)");
+                        else
+                            E[i][j] = entrada;
+                    }
+                }
+
+                //conversion de matriz original a inversa
+
+                System.out.println("El texto desencriptado es: \n\t->"+desencriptarConInversa(oper.matrizInversa(E), textoAEnc, tamano));
+                break;
 
         }
     }
