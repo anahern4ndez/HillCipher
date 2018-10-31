@@ -237,13 +237,21 @@ public class Operaciones{
             }
             else
             {
-            for (int i = 0; i < MatTrans.length; i++)
-            {
-                for (int j = 0; j < MatTrans.length; j++)
+              if(matriz.length==2){
+                matinver[0][0]=matriz[1][1]*inversodet;
+                matinver[1][1]=matriz[0][0]*inversodet;
+                matinver[0][1]=(29-matriz[0][1])*inversodet;
+                matinver[1][0]=(29-matriz[1][0])*inversodet;
+              }
+              else{
+                for (int i = 0; i < MatTrans.length; i++)
                 {
-                    matinver[i][j] = Math.floorMod((int)(MatTrans[i][j]*inversodet),29);
+                    for (int j = 0; j < MatTrans.length; j++)
+                    {
+                        matinver[i][j] = Math.floorMod((int)(MatTrans[i][j]*inversodet),29);
+                    }
                 }
-            }
+              }
     }
     return matinver;
 }
