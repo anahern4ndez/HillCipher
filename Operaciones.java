@@ -1,4 +1,214 @@
-public class Operaciones{
+import java.util.*;
+import java.lang.Math;
+import java.io.*; 
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+public class Operaciones
+{
+
+    static int[][] E; //matriz de encriptacion
+    static int[][] E_1; //matriz de Desencriptacion
+    //constructor de la clase
+    public Operaciones()
+    {
+        //nada 
+    }
+    /**
+     * En el caso que el usuario quiera solo ingresar el texto y no una matriz, se genera una con numeros aleatorios
+     * @param opcion: se usa para saber si el usuario desea encriptar o desencriptar con la(s) matri(ces) que se generaran.
+     */
+    public void generacionMatriz(int opcion)
+    {
+        //generacion de matriz aleatoria
+        int mat[][] = new int[2][2];
+        for (int i=0; i< 2; i++)
+        {
+            for (int j =0; j<2; j++)
+            {
+                mat[i][j] = (int)(Math.random() * 29);
+            }
+        }
+        if(Determinante(0, mat) == 0) //en el caso que se genere una matriz que no tiene inversa, que se genere otra
+            generacionMatriz(opcion);
+        if(opcion ==0)
+        {
+            E = mat;
+            E_1 = matrizInversa(E);
+        }
+        else
+        {
+            E_1 = mat;
+            E = matrizInversa(E_1);
+        }
+    }
+    /**
+     * 
+     * @param opcion: se utiliza para saber si se va a encriptar con la matriz ingresada o si se va a desencriptar. Es un entero que puede ser 0(encriptar) o 1 (desencriptar)
+     * @param matriz: los valores de esta matriz seran ingresados a la matriz de encriptacion/desencriptacion
+     */
+    public void llenarMatriz(int opcion, int[][] matriz)
+    {
+        if(opcion == 0)
+        {
+            E = matriz;
+            E_1 = matrizInversa(E);
+        }
+        else
+        {
+            E_1 = matriz;
+            E = matrizInversa(E_1);
+        }
+    }
+
+    public String encriptar(String texto)
+    {
+        int tamanoMatriz = E.length;
+        int x = tamanoMatriz;
+        if((texto.length()%x) !=0)
+        {
+            for(int i =0; i< (x-(texto.length()%x)); i++)
+            {
+                texto += " "; //se le concatena espacios vacios
+            }
+        }
+        int y =texto.length()/tamanoMatriz;
+        //traslacion de texto a una matriz
+        int[][] matrizMensaje = new int[x][y];
+        int letra = 0;
+        for(int i=0; i< x;i++)
+        {
+            for(int j=0; j<y; j++)
+            {
+                char let = texto.charAt(i + x*j);
+                int c = (int)let;
+                if (c == 32)
+                {
+                    c = 0; //si es un espacio se le asigna el valor 0
+                }
+                if (texto.charAt(i + x*j) == 33)
+                {
+                    c = 27;
+                }
+                if (texto.charAt(i + x*j) == 63)
+                {
+                    c = 28;
+                }
+                if (c != 0 && c!=27 && c != 28)
+                {
+                    c -= 64; //de lo contrario, se le resta 64 a su valor ascii para que quede mod29
+                }
+                matrizMensaje[i][j] = c;
+            }
+        }
+        int[][] matrizCodif = new int[x][y]; //matriz de mensaje codificado
+        matrizCodif = multiplicarMatrices(matrizMensaje, E, matrizCodif);
+        //regreso de ints a letras
+        String textoFinal ="";
+        for(int i=0; i<matrizCodif.length;i++){
+            for(int j=0; j<matrizCodif[0].length; j++)
+            {
+                int d = matrizCodif[i][j];
+                char lettr =0;
+                if (d == 0)
+                    lettr = 32; //si es un espacio se le asigna el valor 0
+                if (d == 27)
+                    lettr = 33;
+                if (d == 28)
+                    lettr = 63;
+                else if (d != 0 && d!=28 && d != 27)
+                    lettr = (char)(d + 64); //de lo contrario, se le resta 64 a su valor ascii para que quede mod29
+                matrizCodif[i][j] = (int)lettr;
+            }
+        }
+        for(int i=0; i<matrizCodif[0].length;i++)
+        {
+            for(int j=0; j<matrizCodif.length; j++)
+            {
+                String character = Character.toString((char)matrizCodif[j][i]);
+                if(character.equals(" "))
+                    textoFinal += "_";
+                else
+                    textoFinal += character;
+            }
+        }
+        return textoFinal;
+    }
+
+    String desencriptar(String ciphertext)
+    {
+        int x = E_1.length; //tamano de la matriz
+        if((ciphertext.length()%x) !=0)
+        {
+            for(int i =0; i< (x-(ciphertext.length()%x)); i++)
+            {
+                ciphertext += " "; //se le concatena espacios vacios
+            }
+        }
+        int y =ciphertext.length()/x;
+        //traslacion de texto a una matriz
+        int[][] matrizMensajeC = new int[x][y];
+        for(int i=0; i< x;i++)
+        {
+            for(int j=0; j<y; j++)
+            {
+                char let = ciphertext.charAt(i + x*j);
+                int c = (int)let;
+                if (c == 32)
+                {
+                    c = 0; //si es un espacio se le asigna el valor 0
+                }
+                if (ciphertext.charAt(i + x*j) == 33)
+                {
+                    c = 27;
+                }
+                if (ciphertext.charAt(i + x*j) == 63)
+                {
+                    c = 28;
+                }
+                if (c != 0 && c!=27 && c != 28)
+                {
+                    c -= 64; //de lo contrario, se le resta 64 a su valor ascii para que quede mod29
+                }
+                matrizMensajeC[i][j] = c;
+            }
+        }
+        int[][] matrizDesCodif = new int[x][y]; //matriz de mensaje descodificado
+        matrizDesCodif = multiplicarMatrices(matrizMensajeC, E_1, matrizDesCodif);
+        //regreso de ints a letras
+        String textoFinal ="";
+        for(int i=0; i<matrizDesCodif.length;i++){
+            for(int j=0; j<matrizDesCodif[0].length; j++)
+            {
+                int d = matrizDesCodif[i][j];
+                char lettr =0;
+                if (d == 0)
+                    lettr = 32; //si es un espacio se le asigna el valor 0
+                if (d == 27)
+                    lettr = 33;
+                if (d == 28)
+                    lettr = 63;
+                else if (d != 0 && d!=28 && d != 27)
+                    lettr = (char)(d + 64); //de lo contrario, se le resta 64 a su valor ascii para que quede mod29
+                    matrizDesCodif[i][j] = (int)lettr;
+            }
+        }
+        for(int i=0; i<matrizDesCodif[0].length;i++)
+        {
+            for(int j=0; j<matrizDesCodif.length; j++)
+            {
+                String character = Character.toString((char)matrizDesCodif[j][i]);
+                if(character.equals("_"))
+                    textoFinal += " ";
+                else
+                    textoFinal += character;
+            }
+        }
+        return textoFinal;
+
+    }
 
     /**
      * Metodo para hallar inverso multiplicativo
@@ -16,18 +226,18 @@ public class Operaciones{
 
         while (a > 1)
         {
-            // q is quotient
+            // q es el cociente 
             int q = a / m;
 
             int t = m;
 
-            // m is remainder now, process
-            // same as Euclid's algo
+            // m es el residuo
+            // igual que para el algoritmo de Euclides
             m = a % m;
             a = t;
             t = y;
 
-            // Update x and y
+            // Update x, y
             y = x - q * y;
             x = t;
         }
@@ -40,56 +250,51 @@ public class Operaciones{
     }
 
     /**
-    *Metodo para multiplicar matrices
-    * @param matriz1
-    * @param matriz2
-    */
-
-    public int[][] multiplicarMat(int[][]matriz1, int[][]matriz2){
-        int [][]matrizresultante = new int[matriz1.length][matriz2[0].length];
-        for (int i = 0; i < matriz1.length; i++)
-            {
-                for (int j = 0; j < matriz2[0].length; j++)
-                {
-                    int elemento=0;
-
-                    for (int k = 0; k < matriz1[0].length; k++)
-                    {
-                         elemento=elemento+ Math.round(matriz1[i][k]*(matriz2[k][j]));
-                        matrizresultante[i][j]=elemento%29; //aplicar mod29
-
-                    }
-
-                    //System.out.print(elemento+"\t");
-
-                }
-
-                //System.out.println("");
-
-            }
-        return matrizresultante;
-    }
-
-    /**
-    *Metodo para imprimir una matriz en pantalla
+    *   Metodo para imprimir una matriz en pantalla
     * @param matriz
     */
 
-    public void imprimirMat(int[][]matriz){
-        for (int i = 0; i < matriz.length; i++)
+    public String imprimirMat(int[][]matriz){
+        String show = "[";
+        for (int i=0; i< matriz.length; i++)
+        {
+            for (int j =0; j<matriz[0].length; j++)
             {
-                for (int j = 0; j < matriz[i].length; j++)
-                {
-
-                    System.out.print(matriz[i][j]+"\t");
-
-                }
-
-                System.out.println("");
-
+                show += E[i][j];
+                if (j != (matriz.length-1))
+                    show += " , ";
             }
+            if (i !=matriz.length-1)
+                show += "\n ";
+        }
+        show += "]\n";
+        return show;
+    }
 
-
+    // -------------------------     METODOS PARA OBTENER LA INVERSA DE UNA MATRIZ DE CUALQUIER TAMAÑO -------------------------
+    /**
+     * 
+     * @param mensaje: matriz del mensaje a encriptad
+     * @param encr: matriz de encriptacion
+     * @param resultado: matriz del mensaje encriptado
+     * @return: matriz resultado
+     */
+    public int[][] multiplicarMatrices(int[][] mensaje, int[][] encr, int[][] resultado)
+    {
+        int i, j, k;
+        for (i = 0; i < resultado.length; i++)
+        {
+            for (j = 0; j < resultado[0].length; j++)
+            {
+                resultado[i][j] = 0;
+                for (k = 0; k < encr[0].length; k++)
+                {
+                    resultado[i][j] += encr[i][k] * mensaje[k][j];
+                    resultado[i][j] %= 29;
+                }
+            }
+        }
+        return resultado;
     }
 
     /**
@@ -106,16 +311,11 @@ public class Operaciones{
       }
       else
       {
-
           for (int j = 0; j < matriz.length; j++)
           {
               int[][]temp = this.SubMatriz(i,j,matriz);
-
               deter=(int) deter+(int) Math.pow(-1, i+j)*matriz[i][j]*this.Determinante(0, temp);
-
-
           }
-
       }
       deter=Math.floorMod((int)deter, 29);
       return deter;
@@ -128,12 +328,11 @@ public class Operaciones{
     * @param i
     */
 
-     private int[][]SubMatriz(int i,int j,int [][]matriz){
+    private int[][]SubMatriz(int i,int j,int [][]matriz)
+    {
         int[][]temp=new int[matriz.length-1][matriz.length-1];
-
         int count1=0;
         int count2=0;
-
 
         for (int k = 0; k < matriz.length; k++)
         {
@@ -148,18 +347,13 @@ public class Operaciones{
 
                         count2++;
                     }
-
                 }
-
                 count1++;
             }
-
-
         }
-
        return temp;
 
-     }
+    }
 
      /**
      * Metodo para calcular la adjunta de una matriz
@@ -167,28 +361,19 @@ public class Operaciones{
      * @return tempAdjunta
      */
 
-    public int [][]AdjuntaMatriz(int [][]matriz){
-
+    public int [][]AdjuntaMatriz(int [][]matriz)
+    {
         int[][]tempAdjunta=new int[matriz.length][matriz.length];
-
-        for (int i = 0; i < tempAdjunta.length; i++){
-
-            for (int j = 0; j < tempAdjunta.length; j++){
-
+        for (int i = 0; i < tempAdjunta.length; i++)
+        {
+            for (int j = 0; j < tempAdjunta.length; j++)
+            {
                 int[][]temp  = this.SubMatriz(i, j, matriz) ;
-
                 int elementoAdjunto=(int) Math.pow(-1, i+j)*this.Determinante(0, temp);
-
                 tempAdjunta[i][j]=elementoAdjunto;
-
             }
-
         }
-
-
          return tempAdjunta;
-
-
     }
 
     /**
@@ -196,26 +381,18 @@ public class Operaciones{
     * @param matriz
     * @return tempTranspuesta
     */
-
-
-    public int [][]TranspuestaMatriz(int [][]matriz){
-
+    public int [][]TranspuestaMatriz(int [][]matriz)
+    {
         int[][]tempTranspuesta=new int[matriz.length][matriz.length];
-
-        for (int i = 0; i < tempTranspuesta.length; i++){
-
-            for (int j = 0; j < tempTranspuesta.length; j++){
-
+        for (int i = 0; i < tempTranspuesta.length; i++)
+        {
+            for (int j = 0; j < tempTranspuesta.length; j++)
+            {
                 tempTranspuesta[i][j]=matriz[j][i];
-
             }
         }
-
-
         return tempTranspuesta;
-
     }
-
     /**
     * Metodo para calcular la inversa de una matriz
     * @param matriz
@@ -223,25 +400,21 @@ public class Operaciones{
     */
     public int[][] matrizInversa(int[][] matriz){
         int determinate= Determinante(0, matriz); //calculando la determinate
-
         int[][]MatAdjunta= AdjuntaMatriz(matriz);
-
         int[][]MatTrans= TranspuestaMatriz(MatAdjunta);
         int[][] matinver = new int[matriz.length][matriz.length];
             int inversodet = modInverse((int)determinate,29);
             if (determinate==0)
             {
-
                 System.out.println("No existe inversa de la matriz");
-
             }
             else
             {
               if(matriz.length==2){
-                matinver[0][0]=matriz[1][1]*inversodet;
-                matinver[1][1]=matriz[0][0]*inversodet;
-                matinver[0][1]=(29-matriz[0][1])*inversodet;
-                matinver[1][0]=(29-matriz[1][0])*inversodet;
+                matinver[0][0]=(matriz[1][1]*inversodet)%29;
+                matinver[1][1]=(matriz[0][0]*inversodet)%29;
+                matinver[0][1]=Math.floorMod((-1*matriz[0][1])*inversodet,29);
+                matinver[1][0]=Math.floorMod((-1*matriz[1][0])*inversodet,29);
               }
               else{
                 for (int i = 0; i < MatTrans.length; i++)
