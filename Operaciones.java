@@ -1,6 +1,6 @@
 import java.util.*;
 import java.lang.Math;
-import java.io.*; 
+import java.io.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,7 +27,7 @@ public class Operaciones
         E_1 = matrizInversa(E);
     }
     /**
-     * 
+     *
      * @param opcion: se utiliza para saber si se va a encriptar con la matriz ingresada o si se va a desencriptar. Es un entero que puede ser 0(encriptar) o 1 (desencriptar)
      * @param matriz: los valores de esta matriz seran ingresados a la matriz de encriptacion/desencriptacion
      */
@@ -58,7 +58,7 @@ public class Operaciones
                 texto += " "; //se le concatena espacios vacios
             }
         }
-        System.out.println(texto);
+        //System.out.println(texto);
         int y =texto.length()/tamanoMatriz;
         //traslacion de texto a una matriz
         int[][] matrizMensaje = new int[x][y];
@@ -211,7 +211,7 @@ public class Operaciones
 
         while (a > 1)
         {
-            // q es el cociente 
+            // q es el cociente
             int q = a / m;
 
             int t = m;
@@ -244,7 +244,7 @@ public class Operaciones
         int[][] matriz = new int[tamano][tamano];
         if (opc == 0)
             matriz = E;
-        else 
+        else
             matriz = E_1;
         String show = "[";
         for (int i=0; i< matriz.length; i++)
@@ -264,7 +264,7 @@ public class Operaciones
 
     // -------------------------     METODOS PARA OBTENER LA INVERSA DE UNA MATRIZ DE CUALQUIER TAMAÑO -------------------------
     /**
-     * 
+     *
      * @param mensaje: matriz del mensaje a encriptad
      * @param encr: matriz de encriptacion
      * @param resultado: matriz del mensaje encriptado
