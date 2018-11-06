@@ -1,3 +1,11 @@
+/* Operaciones.java
+ * Contiene las operaciones necesarias para trabajar con matrices
+ * (multiplicacion, inversos, opreaciones con modulos).
+ * Universidad del Valle de Guatemala
+ * Matematica Discreta Segundo Semestre 2018
+ * Andrea Arguello 17801, Ana Lucia Hernandez 17138
+ * 6 de noviembre de 2018
+**/
 import java.util.*;
 import java.lang.Math;
 import java.io.*;
@@ -41,7 +49,7 @@ public class Operaciones
     public String encriptar(String texto)
     {
         int tamanoMatriz = E.length;
-        
+
         int x = tamanoMatriz;
         /** if((texto.length()%x) !=0)
         {
@@ -116,6 +124,73 @@ public class Operaciones
         return textoFinal;
     }
 
+    //Esencialmente el mismo metodo que desencriptar, pero la matriz a multiplicar es E y no E_1
+    String desencriptarConInv(String ciphertext){
+      int x = E_1.length; //tamano de la matriz
+      while((ciphertext.length()%x) !=0)
+          ciphertext += " "; //se le concatena espacios vacios
+      int y =ciphertext.length()/x;
+      //traslacion de texto a una matriz
+      int[][] matrizMensajeC = new int[x][y];
+      for(int i=0; i< x;i++)
+      {
+          for(int j=0; j<y; j++)
+          {
+              char let = ciphertext.charAt(i + x*j);
+              int c = (int)let;
+              if (c == 95)
+              {
+                  c = 0; //si es un espacio se le asigna el valor 0
+              }
+              if (ciphertext.charAt(i + x*j) == 33)
+              {
+                  c = 27;
+              }
+              if (ciphertext.charAt(i + x*j) == 63)
+              {
+                  c = 28;
+              }
+              if (c != 0 && c!=27 && c != 28)
+              {
+                  c -= 64; //de lo contrario, se le resta 64 a su valor ascii para que quede mod29
+              }
+              matrizMensajeC[i][j] = c;
+          }
+      }
+      int[][] matrizDesCodif = new int[x][y]; //matriz de mensaje descodificado
+      matrizDesCodif = multiplicarMatrices(matrizMensajeC, E, matrizDesCodif); //Se utiliza "E" que en realidad es la inversa
+      //regreso de ints a letras
+      String textoFinal ="";
+      for(int i=0; i<matrizDesCodif.length;i++){
+          for(int j=0; j<matrizDesCodif[0].length; j++)
+          {
+              int d = matrizDesCodif[i][j];
+              char lettr =0;
+              if (d == 0)
+                  lettr = 32; //si es un espacio se le asigna el valor 0
+              if (d == 27)
+                  lettr = 33;
+              if (d == 28)
+                  lettr = 63;
+              else if (d != 0 && d!=28 && d != 27)
+                  lettr = (char)(d + 64); //de lo contrario, se le resta 64 a su valor ascii para que quede mod29
+                  matrizDesCodif[i][j] = (int)lettr;
+          }
+      }
+      for(int i=0; i<matrizDesCodif[0].length;i++)
+      {
+          for(int j=0; j<matrizDesCodif.length; j++)
+          {
+              String character = Character.toString((char)matrizDesCodif[j][i]);
+              if(character.equals("_"))
+                  textoFinal += " ";
+              else
+                  textoFinal += character;
+          }
+      }
+      return textoFinal;
+    }
+
     String desencriptar(String ciphertext)
     {
         int x = E_1.length; //tamano de la matriz
@@ -150,7 +225,7 @@ public class Operaciones
             }
         }
         int[][] matrizDesCodif = new int[x][y]; //matriz de mensaje descodificado
-        matrizDesCodif = multiplicarMatrices(matrizMensajeC, E_1, matrizDesCodif);
+        matrizDesCodif = multiplicarMatrices(matrizMensajeC, E_1, matrizDesCodif); //Se usa la inversa calculada a partir de E original
         //regreso de ints a letras
         String textoFinal ="";
         for(int i=0; i<matrizDesCodif.length;i++){

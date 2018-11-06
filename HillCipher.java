@@ -1,3 +1,10 @@
+/* HillCipher.java
+ * Cifra y descifra mensajes por medio de matrices predeterminadas o ingresadas por el usuario.
+ * Universidad del Valle de Guatemala
+ * Matematica Discreta Segundo Semestre 2018
+ * Andrea Arguello 17801, Ana Lucia Hernandez 17138
+ * 6 de noviembre de 2018
+**/
 import java.util.*;
 import java.lang.Math;
 import java.io.*;
@@ -35,14 +42,20 @@ public class HillCipher {
         textoDesencriptado = textoOriginal;
         System.out.println("Texto original: \n"+ textoOriginal);
         sc = new Scanner(System.in);
+        int opcion;
+        do{
         System.out.println("¿Que desea hacer? \n\t1. Encriptar \n\t2. Desencriptar");
-        int opcion = sc.nextInt();
+        opcion = sc.nextInt();}while(opcion!=1 && opcion!=2);
         sc.nextLine();
         switch(opcion)
         {
             case 1:
+                int opEnc;
                 System.out.println("¿Cómo quiere encriptar el texto?\n\t1. Con una matriz preestablecida.\n\t2. Con una matriz ingresada personalmente.");
-                int opEnc = sc.nextInt();
+                do{
+                  System.out.println("Ingrese una de las opciones validas:");
+                  opEnc = sc.nextInt();
+                }while(opEnc!=1 && opEnc!=2);
 
                 switch(opEnc)
                 {
@@ -86,17 +99,58 @@ public class HillCipher {
 
             case 2:
                 System.out.println("¿Cómo quiere desencriptar el texto?\n\t1. Con una matriz preestablecida.\n\t2. Con una matriz ingresada personalmente.");
-                int opDesenc = sc.nextInt();
+                int opDesenc;
+                do{
+                  System.out.println("Ingrese una de las opciones validas:");
+                  opDesenc= sc.nextInt();}while(opDesenc!=1 && opDesenc!=2);
                 switch(opDesenc)
                 {
                     case 1:
                         System.out.println("\nMatriz de desencriptacion utilizada: ");
-                        System.out.println(oper.imprimirMat(1));
+                        System.out.println(oper.imprimirMat(1)); //imprime la inversa calculada
                         textoDesencriptado = oper.desencriptar(textoOriginal);
                         System.out.println("El texto desencriptado es: \n\t->"+textoDesencriptado);
                         System.out.println("\nSu texto desencriptado se ha guardado en el archivo: plaintext.txt");
                         break;
                     case 2:
+                    System.out.println("La matriz a ingresar será:\n\t1. La matriz de desencriptacion (D)\n\t2. La matriz de encriptacion original (E)");
+                    int opmat;
+                    do{
+                      System.out.println("Ingrese una de las opciones validas:");
+                      opmat=sc.nextInt();
+                    } while(opmat!=1 && opmat!=2);
+                    switch(opmat)
+                    {
+                      case 1:
+                        int dimension;
+                        do{
+                        System.out.println("Ingrese el tamaño de la matriz de desencriptacion (minimo: 2, maximo: 4): ");
+                        dimension = sc.nextInt();}while(dimension<2 || dimension>4);
+                        System.out.println("A continuación, ingrese la matriz usada para encriptar: ");
+                        int[][] D = new int[dimension][dimension];
+                        //ingreso de matriz de encriptacion
+                        System.out.println("Recuerde ingresar unicamente numeros en mod 29. De lo contrario, se le pedira reingresar el numero.\n");
+                        for(int i=0; i<dimension;i++){
+                            for(int j=0; j<dimension; j++){
+                              int data;
+                              do{
+                                System.out.println("Introduzca el elemento [" + i + "," + j + "]");
+                                data = sc.nextInt();
+                              }while(data<0 || data >29);
+                                    D[i][j] = data;
+                            }
+                        }
+
+                        if(oper.Determinante(0,D)!=0){
+                        oper.llenarMatriz(1, D); //Indica que D es para desencriptacion
+                        System.out.println("\nMatriz de desencriptacion utilizada (D): ");
+                        System.out.println(oper.imprimirMat(0)); //Imprime D porque esta ya es la inversa
+                        textoDesencriptado = oper.desencriptarConInv(textoOriginal);
+                        System.out.println("El texto desencriptado es: \n\t->"+textoDesencriptado);
+                        System.out.println("\nSu texto desencriptado se ha guardado en el archivo: plaintext.txt");
+                        break;
+                      }else{System.out.println("No se puede calcular una matriz inversa. No es posible desencriptar este mensaje."); break;}
+                      case 2:
                         int size;
                         do{
                         System.out.println("Ingrese el tamaño de la matriz de encriptacion (minimo: 2, maximo: 4): ");
@@ -117,15 +171,15 @@ public class HillCipher {
                         }
 
                         if(oper.Determinante(0,mat_1)!=0){
-                        oper.llenarMatriz(1, mat_1);
-                        System.out.println("\nMatriz de desencriptacion utilizada: ");
-                        System.out.println(oper.imprimirMat(1));
+                        oper.llenarMatriz(1, mat_1); //Indica que mat_1 es para desencriptacion
+                        System.out.println("\nMatriz de desencriptacion utilizada (E^-1): ");
+                        System.out.println(oper.imprimirMat(1)); //Imprime la inversa de mat_1
                         textoDesencriptado = oper.desencriptar(textoOriginal);
                         System.out.println("El texto desencriptado es: \n\t->"+textoDesencriptado);
                         System.out.println("\nSu texto desencriptado se ha guardado en el archivo: plaintext.txt");
                         break;
                       }else{System.out.println("No se puede calcular una matriz inversa. No es posible desencriptar este mensaje."); break;}
-                }
+                }}
                 break;
         }
         try{
