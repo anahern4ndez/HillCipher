@@ -15,7 +15,7 @@ public class Operaciones
     public Operaciones()
     {
         // establecimiento de matriz para encriptar y desencriptar preestablecida
-        int[] numeros = {1,12,19,20,21,4,6,7,8,5,9,0,1,3,12,25};
+        int[] numeros = {1,12,19,20,21,4,6,7,8,5,9,0,1,3,12,2};
         E = new int[4][4];
         for (int i=0; i< 4; i++)
         {
@@ -41,14 +41,18 @@ public class Operaciones
     public String encriptar(String texto)
     {
         int tamanoMatriz = E.length;
+        
         int x = tamanoMatriz;
-        if((texto.length()%x) !=0)
+        /** if((texto.length()%x) !=0)
         {
             for(int i =0; i< (x-(texto.length()%x)); i++)
             {
-                texto += " "; //se le concatena espacios vacios
+                texto += "A"; //se le concatena espacios vacios
             }
-        }
+        }*/
+        while((texto.length()%x) !=0)
+            texto += " "; //se le concatena espacios vacios
+        System.out.println(texto);
         int y =texto.length()/tamanoMatriz;
         //traslacion de texto a una matriz
         int[][] matrizMensaje = new int[x][y];
@@ -115,13 +119,8 @@ public class Operaciones
     String desencriptar(String ciphertext)
     {
         int x = E_1.length; //tamano de la matriz
-        if((ciphertext.length()%x) !=0)
-        {
-            for(int i =0; i< (x-(ciphertext.length()%x)); i++)
-            {
-                ciphertext += " "; //se le concatena espacios vacios
-            }
-        }
+        while((ciphertext.length()%x) !=0)
+            ciphertext += " "; //se le concatena espacios vacios
         int y =ciphertext.length()/x;
         //traslacion de texto a una matriz
         int[][] matrizMensajeC = new int[x][y];
@@ -241,7 +240,7 @@ public class Operaciones
         {
             for (int j =0; j<matriz[0].length; j++)
             {
-                show += E_1[i][j];
+                show += matriz[i][j];
                 if (j != (matriz.length-1))
                     show += " , ";
             }
