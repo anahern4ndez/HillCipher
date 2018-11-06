@@ -118,7 +118,7 @@ public class HillCipher {
 
                         if(oper.Determinante(0,mat_1)!=0){
                         oper.llenarMatriz(1, mat_1);
-                        System.out.println("\nMatriz de encriptacion utilizada: ");
+                        System.out.println("\nMatriz de desencriptacion utilizada: ");
                         System.out.println(oper.imprimirMat(1));
                         textoDesencriptado = oper.desencriptar(textoOriginal);
                         System.out.println("El texto desencriptado es: \n\t->"+textoDesencriptado);

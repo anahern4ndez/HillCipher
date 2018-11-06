@@ -33,18 +33,9 @@ public class Operaciones
      */
     public void llenarMatriz(int opcion, int[][] matriz)
     {
-        if(opcion == 0)
-        {
-            E = new int[matriz.length][matriz.length];
-            E = matriz;
-            E_1 = matrizInversa(E);
-        }
-        else
-        {
-            E_1 = new int[matriz.length][matriz.length];
-            E_1 = matriz;
-            E = matrizInversa(E_1);
-        }
+        E = new int[matriz.length][matriz.length];
+        E = matriz;
+        E_1 = matrizInversa(E);
     }
 
     public String encriptar(String texto)
@@ -58,7 +49,6 @@ public class Operaciones
                 texto += " "; //se le concatena espacios vacios
             }
         }
-        //System.out.println(texto);
         int y =texto.length()/tamanoMatriz;
         //traslacion de texto a una matriz
         int[][] matrizMensaje = new int[x][y];
@@ -244,14 +234,14 @@ public class Operaciones
         int[][] matriz = new int[tamano][tamano];
         if (opc == 0)
             matriz = E;
-        else
+        if (opc == 1)
             matriz = E_1;
         String show = "[";
         for (int i=0; i< matriz.length; i++)
         {
             for (int j =0; j<matriz[0].length; j++)
             {
-                show += matriz[i][j];
+                show += E_1[i][j];
                 if (j != (matriz.length-1))
                     show += " , ";
             }
