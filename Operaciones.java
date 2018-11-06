@@ -9,40 +9,22 @@ import java.io.InputStreamReader;
 public class Operaciones
 {
 
-    static int[][] E; //matriz de encriptacion
-    static int[][] E_1; //matriz de Desencriptacion
+    private int[][] E; //matriz de encriptacion
+    private int[][] E_1; //matriz de Desencriptacion
     //constructor de la clase
     public Operaciones()
     {
-        //nada 
-    }
-    /**
-     * En el caso que el usuario quiera solo ingresar el texto y no una matriz, se genera una con numeros aleatorios
-     * @param opcion: se usa para saber si el usuario desea encriptar o desencriptar con la(s) matri(ces) que se generaran.
-     */
-    public void generacionMatriz(int opcion)
-    {
-        //generacion de matriz aleatoria
-        int mat[][] = new int[2][2];
-        for (int i=0; i< 2; i++)
+        // establecimiento de matriz para encriptar y desencriptar preestablecida
+        int[] numeros = {1,12,19,20,21,4,6,7,8,5,9,0,1,3,12,25};
+        E = new int[4][4];
+        for (int i=0; i< 4; i++)
         {
-            for (int j =0; j<2; j++)
+            for (int j =0; j<4; j++)
             {
-                mat[i][j] = (int)(Math.random() * 29);
+                E[i][j] = numeros[i+j];
             }
         }
-        if(Determinante(0, mat) == 0) //en el caso que se genere una matriz que no tiene inversa, que se genere otra
-            generacionMatriz(opcion);
-        if(opcion ==0)
-        {
-            E = mat;
-            E_1 = matrizInversa(E);
-        }
-        else
-        {
-            E_1 = mat;
-            E = matrizInversa(E_1);
-        }
+        E_1 = matrizInversa(E);
     }
     /**
      * 
@@ -53,11 +35,13 @@ public class Operaciones
     {
         if(opcion == 0)
         {
+            E = new int[matriz.length][matriz.length];
             E = matriz;
             E_1 = matrizInversa(E);
         }
         else
         {
+            E_1 = new int[matriz.length][matriz.length];
             E_1 = matriz;
             E = matrizInversa(E_1);
         }
@@ -74,6 +58,7 @@ public class Operaciones
                 texto += " "; //se le concatena espacios vacios
             }
         }
+        System.out.println(texto);
         int y =texto.length()/tamanoMatriz;
         //traslacion de texto a una matriz
         int[][] matrizMensaje = new int[x][y];
@@ -156,7 +141,7 @@ public class Operaciones
             {
                 char let = ciphertext.charAt(i + x*j);
                 int c = (int)let;
-                if (c == 32)
+                if (c == 95)
                 {
                     c = 0; //si es un espacio se le asigna el valor 0
                 }
@@ -254,13 +239,19 @@ public class Operaciones
     * @param matriz
     */
 
-    public String imprimirMat(int[][]matriz){
+    public String imprimirMat(int opc){
+        int tamano = this.E_1.length;
+        int[][] matriz = new int[tamano][tamano];
+        if (opc == 0)
+            matriz = E;
+        else 
+            matriz = E_1;
         String show = "[";
         for (int i=0; i< matriz.length; i++)
         {
             for (int j =0; j<matriz[0].length; j++)
             {
-                show += E[i][j];
+                show += matriz[i][j];
                 if (j != (matriz.length-1))
                     show += " , ";
             }
